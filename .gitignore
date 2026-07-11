@@ -17,6 +17,13 @@ coverage.*
 *.coverprofile
 profile.cov
 
+/models/**/*.onnx
+/models/**/*.pdmodel
+/models/**/*.pdiparams
+/models/**/*.pdiparams.info
+/models/**/*.json
+
+ROADMAP.md
 # Dependency directories (remove the comment below to include it)
 vendor/
 
