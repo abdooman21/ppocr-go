@@ -187,7 +187,7 @@ func (p *Pipeline) processBox(img gocv.Mat, box detect.Box) (Line, error) {
 		if err == nil {
 			rotate, _ := recognize.ClassifyOrientation(clsOut, p.cfg.ClsThresh)
 			if rotate {
-				var rotated gocv.Mat
+				rotated := gocv.NewMat()
 				gocv.Rotate(crop, &rotated, gocv.Rotate180Clockwise)
 				crop.Close()
 				crop = rotated

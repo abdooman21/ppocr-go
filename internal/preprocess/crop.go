@@ -28,13 +28,13 @@ func RotateCrop(img gocv.Mat, quad [4]image.Point) gocv.Mat {
 	m := gocv.GetPerspectiveTransform2f(src, dst)
 	defer m.Close()
 
-	var cropped gocv.Mat
+	cropped := gocv.NewMat()
 	// Python also sets flags=INTER_CUBIC, borderMode=BORDER_REPLICATE —
 	// use gocv.WarpPerspectiveWithParams if you need bit-exact parity here.
 	gocv.WarpPerspective(img, &cropped, m, image.Pt(cropW, cropH))
 
 	if float64(cropped.Rows())/float64(cropped.Cols()) >= 1.5 {
-		var rotated gocv.Mat
+		rotated := gocv.NewMat()
 		gocv.Rotate(cropped, &rotated, gocv.Rotate90Clockwise)
 		cropped.Close()
 		return rotated

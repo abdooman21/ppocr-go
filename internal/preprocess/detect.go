@@ -43,6 +43,7 @@ func ResizeForDetection(img gocv.Mat, limitSideLen int, limitType LimitType, max
 		resizeH = minInt(resizeH, maxSideLimit)
 		resizeW = minInt(resizeW, maxSideLimit)
 	}
+	resized = gocv.NewMat()
 	gocv.Resize(img, &resized, image.Pt(resizeW, resizeH), 0, 0, gocv.InterpolationLinear)
 	return resized, float64(resizeH) / float64(h), float64(resizeW) / float64(w)
 }
@@ -56,7 +57,7 @@ func ResizeForDetection(img gocv.Mat, limitSideLen int, limitType LimitType, max
 // single scalar for all channels, but std differs per channel, so it can't
 // reproduce this exactly. See ROADMAP.md, "Gotcha 2."
 func NormalizeDetInput(resized gocv.Mat) []float32 {
-	var f32 gocv.Mat
+	f32 := gocv.NewMat()
 	resized.ConvertToWithParams(&f32, gocv.MatTypeCV32FC3, 1.0/255.0, 0)
 	defer f32.Close()
 

@@ -71,13 +71,13 @@ type Engine struct {
 // Call [Engine.Close] when done to release all resources.
 func NewEngine(opts ...Option) (*Engine, error) {
 	cfg := &config{
-		// I/O names matching PP-OCRv5/v6 exported ONNX models.
+		// I/O names matching PP-OCRv6 ONNX models exported via paddle2onnx.
 		detInputName:  "x",
-		detOutputName: "sigmoid_0.tmp_0",
+		detOutputName: "fetch_name_0",
 		clsInputName:  "x",
-		clsOutputName: "softmax_0.tmp_0",
+		clsOutputName: "fetch_name_0",
 		recInputName:  "x",
-		recOutputName: "softmax_0.tmp_0",
+		recOutputName: "fetch_name_0",
 	}
 	for _, o := range opts {
 		o(cfg)
@@ -174,9 +174,13 @@ func NewEngine(opts ...Option) (*Engine, error) {
 // recognized, positioned lines of text in reading order.
 //
 // The input must be a BGR image loaded via gocv.IMRead or equivalent.
-// Do NOT convert to RGB — PaddleOCR's models expect BGR input.
 func (e *Engine) Recognize(img gocv.Mat) ([]Line, error) {
-	pipeLines, err := e.pipe.Run(img)
+	// PaddleOCR models expect RGB input, but gocv.IMRead loads BGR.
+	rgb := gocv.NewMat()
+	defer rgb.Close()
+	gocv.CvtColor(img, &rgb, gocv.ColorBGRToRGB)
+
+	pipeLines, err := e.pipe.Run(rgb)
 	if err != nil {
 		return nil, err
 	}

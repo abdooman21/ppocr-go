@@ -19,22 +19,24 @@ const (
 //
 // Returns a flat NCHW float32 slice with shape [1, 3, clsInputH, clsInputW].
 func prepareClsInput(crop gocv.Mat) []float32 {
-	var resized gocv.Mat
+	resized := gocv.NewMat()
 	gocv.Resize(crop, &resized, image.Pt(clsInputW, clsInputH), 0, 0, gocv.InterpolationLinear)
 	defer resized.Close()
 
-	var f32 gocv.Mat
+	f32 := gocv.NewMat()
 	resized.ConvertToWithParams(&f32, gocv.MatTypeCV32FC3, 1.0/255.0, 0)
 	defer f32.Close()
-	f32.SubtractFloat(0.5)
-	f32.DivideFloat(0.5)
-
 	channels := gocv.Split(f32)
 	defer func() {
 		for _, c := range channels {
 			c.Close()
 		}
 	}()
+
+	for c := 0; c < 3; c++ {
+		channels[c].SubtractFloat(0.5)
+		channels[c].DivideFloat(0.5)
+	}
 
 	h, w := clsInputH, clsInputW
 	out := make([]float32, 3*h*w)

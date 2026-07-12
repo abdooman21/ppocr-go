@@ -18,7 +18,7 @@ RUN wget -q "https://go.dev/dl/go1.25.4.linux-amd64.tar.gz" -O /tmp/go.tar.gz &&
 ENV PATH="/usr/local/go/bin:${PATH}"
 
 # Install ONNX Runtime shared library.
-ARG ORT_VERSION=1.19.2
+ARG ORT_VERSION=1.20.1
 ARG TARGETARCH=amd64
 
 RUN wget -q "https://github.com/microsoft/onnxruntime/releases/download/v${ORT_VERSION}/onnxruntime-linux-x64-${ORT_VERSION}.tgz" \
@@ -36,7 +36,7 @@ COPY . .
 
 # Build the CLI binary.
 # Downgrade onnxruntime_go to match our C library version (1.19.2 / API 19)
-RUN go get github.com/yalue/onnxruntime_go@v1.16.0 && go mod tidy
+RUN go get github.com/yalue/onnxruntime_go@v1.16.0 && go mod tidy && go mod vendor
 RUN CGO_ENABLED=1 go build -o /ppocr ./cmd/ppocr
 
 # ── Runtime stage ─────────────────────────────────────────────────────────
